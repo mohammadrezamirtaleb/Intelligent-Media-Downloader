@@ -36,6 +36,11 @@
 └── 📄 README.md                  # Project documentation
 ```
 
+### 🎥 About the `bin/` Directory
+For the script to work flawlessly with advanced features, both binary files in the `bin/` directory are absolutely essential:
+*   **`ffprobe.exe` (The Analyzer):** Used by `yt-dlp` to probe and analyze multimedia streams, detecting codecs, resolutions, and available formats *before* downloading.
+*   **`ffmpeg.exe` (The Processor):** The core engine used to merge separate high-quality video and audio streams (required for 1080p+), convert files to MP3/FLAC, and embed metadata or thumbnails.
+
 ---
 
 ## 🚀 Getting Started (Windows)
