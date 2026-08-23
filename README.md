@@ -21,19 +21,19 @@
 ## 📂 Project Structure
 
 ```
-YouD/
+📂 YouD/
 │
-├── bin/                       # Contains FFmpeg binaries (ffmpeg.exe, ffprobe.exe)
-│   ├── ffmpeg.exe
-│   └── ffprobe.exe
+├── 📂 bin/                       # Contains FFmpeg binaries
+│   ├── 📄 ffmpeg.exe
+│   └── 📄 ffprobe.exe
 │
-├── src/                       # Source code directory
-│   └── youtube_downloader.py  # The main application script
+├── 📂 src/                       # Source code directory
+│   └── 📄 youtube_downloader.py  # The main application script
 │
-├── run.ps1                    # Auto-setup and launcher script for Windows PowerShell
-├── requirements.txt           # Python dependencies
-├── .gitignore                 # Git ignore rules
-└── README.md                  # Project documentation
+├── 📄 run.ps1                    # Auto-setup and launcher script
+├── 📄 requirements.txt           # Python dependencies
+├── 📄 .gitignore                 # Git ignore rules
+└── 📄 README.md                  # Project documentation
 ```
 
 ---
