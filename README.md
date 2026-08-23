@@ -6,15 +6,17 @@
 
 ## 🌟 Features
 
-*   **🎨 Stunning CLI Interface:** Built with `Rich`, featuring beautiful progress bars, banners, and color-coded menus.
-*   **🤖 Local AI Summarization:** Automatically detects local Ollama instances, downloads video transcripts, and generates comprehensive English summaries of videos.
+*   **📋 Auto-Clipboard:** Instantly detects YouTube/Media URLs from your clipboard to save time.
+*   **⚡ Turbo Speed:** Integrated with `Aria2c` to split downloads into 16 parallel connections for ultra-fast speeds!
+*   **✂️ Video Trimmer:** Download specific parts of a video (e.g., from 01:20 to 05:30) instead of the whole file.
+*   **♾️ Universal Downloader:** Works perfectly with YouTube, Instagram, Spotify, Twitter, and hundreds of other sites.
+*   **🤖 Local AI Summarization:** Automatically detects local Ollama instances and generates video summaries.
 *   **🎬 Advanced Format Selection:** Download in up to 4K/8K resolution, 1080p, 720p, or just a single merged file.
 *   **🎧 Audiophile Quality:** Extract high-quality MP3 (320kbps) or Lossless FLAC.
-*   **🖼️ Metadata Embedding:** Automatically embeds video thumbnails, artist names, and titles into downloaded files (especially useful for MP3s).
+*   **🖼️ Metadata Embedding:** Automatically embeds video thumbnails, artist names, and titles into downloaded files.
 *   **📝 Subtitle Support:** Download and attach `en`, `fa`, or all available subtitles in VTT/SRT formats.
-*   **🍪 Bypass Restrictions:** Extract browser cookies (Chrome, Firefox, Edge) to download age-restricted or members-only videos.
-*   **🔒 Proxy Support:** Full support for custom proxy routing (e.g., `socks5://127.0.0.1:10808`).
-*   **📚 Smart Playlist History:** Keeps track of downloaded videos in a playlist so you can resume interrupted downloads without duplicates.
+*   **🍪 Bypass Restrictions:** Extract browser cookies (Chrome, Firefox, Edge) to bypass age or member restrictions.
+*   **🔒 Proxy Support & 📚 Smart History:** Custom proxy routing and playlist tracking to avoid duplicates.
 
 ---
 
@@ -24,6 +26,7 @@
 📂 YouD/
 │
 ├── 📂 bin/                       # Contains FFmpeg binaries
+│   ├── 📄 aria2c.exe
 │   ├── 📄 ffmpeg.exe
 │   └── 📄 ffprobe.exe
 │

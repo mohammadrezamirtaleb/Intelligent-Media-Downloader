@@ -2,6 +2,7 @@ import os
 import sys
 import re
 import requests
+import tkinter as tk
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
@@ -14,8 +15,26 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def show_banner():
-    banner_text = "[bold cyan]YouTube Downloader Super Pro[/bold cyan]\n[magenta]Powered by yt-dlp, FFmpeg, Rich, Mutagen & Local AI[/magenta]"
+    banner_text = "[bold cyan]Universal Media Downloader Super Pro[/bold cyan]\n[magenta]YouTube, Instagram, Spotify, Twitter & more![/magenta]\n[yellow]Powered by yt-dlp, FFmpeg, Aria2c, Rich, Mutagen & Local AI[/yellow]"
     console.print(Panel(banner_text, expand=False, border_style="green"))
+
+def get_clipboard_text():
+    """Extract text from clipboard without showing a window."""
+    try:
+        root = tk.Tk()
+        root.withdraw()
+        text = root.clipboard_get()
+        root.destroy()
+        return text.strip()
+    except Exception:
+        return ""
+
+def time_to_seconds(t_str):
+    """Convert HH:MM:SS or MM:SS to seconds"""
+    parts = [float(p) for p in t_str.strip().split(':')]
+    if len(parts) == 3: return parts[0]*3600 + parts[1]*60 + parts[2]
+    if len(parts) == 2: return parts[0]*60 + parts[1]
+    return parts[0]
 
 def get_ollama_models():
     """Detect local Ollama models"""
@@ -48,17 +67,13 @@ def clean_vtt(text):
     text = re.sub(r'^WEBVTT.*\n?', '', text, flags=re.MULTILINE)
     text = re.sub(r'^Kind:.*\n?', '', text, flags=re.MULTILINE)
     text = re.sub(r'^Language:.*\n?', '', text, flags=re.MULTILINE)
-    
     text = re.sub(r'[\d:\.]+\s*-->\s*[\d:\.]+[^\n]*\n', '', text)
     text = re.sub(r'<[^>]+>', '', text)
-    
     lines = [line.strip() for line in text.split('\n') if line.strip() and not line.strip().isdigit()]
-    
     dedup = []
     for line in lines:
         if not dedup or dedup[-1] != line:
             dedup.append(line)
-            
     return " ".join(dedup)
 
 def sanitize_filename(name):
@@ -68,7 +83,17 @@ def main():
     clear_screen()
     show_banner()
     
-    url = Prompt.ask("\n[bold yellow]📌 Please enter the YouTube Video or Playlist URL[/bold yellow]")
+    # 1. Auto Clipboard Detection
+    clip_text = get_clipboard_text()
+    url = ""
+    if clip_text.startswith("http"):
+        console.print(f"\n[bold green]📋 Found URL in clipboard:[/bold green] [cyan]{clip_text}[/cyan]")
+        use_clip = Prompt.ask("Use this URL?", choices=["y", "n"], default="y")
+        if use_clip == 'y':
+            url = clip_text
+            
+    if not url:
+        url = Prompt.ask("\n[bold yellow]📌 Please enter the Media URL (YouTube, Insta, Spotify, etc.)[/bold yellow]")
     
     if not url.strip():
         console.print("[bold red]URL cannot be empty![/bold red]")
@@ -85,10 +110,27 @@ def main():
     choice = Prompt.ask("\n[bold cyan]Enter your choice[/bold cyan]", choices=["1", "2", "3", "4", "5", "6"], default="1")
     
     console.print("\n[bold cyan]⚙️ Advanced Features (Press Enter to skip / use defaults):[/bold cyan]")
-    use_proxy = Prompt.ask("[magenta]1. Proxy URL (e.g. socks5://127.0.0.1:10808 or enter to skip)[/magenta]", default="")
-    use_cookies = Prompt.ask("[magenta]2. Extract cookies to unlock age-restricted/member videos?[/magenta]", choices=["chrome", "firefox", "edge", "none"], default="none")
-    embed_meta = Prompt.ask("[magenta]3. Embed Thumbnail, Artist, Title (Metadata) into file?[/magenta]", choices=["y", "n"], default="y")
-    download_subs = Prompt.ask("[magenta]4. Download Subtitles file? (en, fa, all, none)[/magenta]", default="none")
+    
+    # 2. Trim Video Logic
+    trim_video = Prompt.ask("[magenta]✂️ 1. Trim Video? (Enter to skip, 'y' to cut a segment)[/magenta]", choices=["y", "n", ""], default="")
+    start_sec, end_sec = None, None
+    if trim_video == "y":
+        try:
+            s_time = Prompt.ask("[magenta]   Start Time (Format MM:SS or seconds)[/magenta]", default="00:00")
+            e_time = Prompt.ask("[magenta]   End Time (Format MM:SS or seconds)[/magenta]")
+            start_sec = time_to_seconds(s_time)
+            end_sec = time_to_seconds(e_time)
+        except Exception:
+            console.print("[red]Invalid time format. Trimmer ignored.[/red]")
+            start_sec, end_sec = None, None
+            
+    # 3. Channel/Playlist logic
+    playlist_limit = Prompt.ask("[magenta]🔢 2. Max items to download? (e.g. 5 for latest 5. Enter to skip)[/magenta]", default="")
+    
+    use_proxy = Prompt.ask("[magenta]🌐 3. Proxy URL (e.g. socks5://127.0.0.1:10808 or enter to skip)[/magenta]", default="")
+    use_cookies = Prompt.ask("[magenta]🍪 4. Extract cookies to unlock restricted videos?[/magenta]", choices=["chrome", "firefox", "edge", "none"], default="none")
+    embed_meta = Prompt.ask("[magenta]🏷️ 5. Embed Thumbnail & Metadata into file?[/magenta]", choices=["y", "n"], default="y")
+    download_subs = Prompt.ask("[magenta]📝 6. Download Subtitles file? (en, fa, all, none)[/magenta]", default="none")
     
     # AI Summary detection
     models = get_ollama_models()
@@ -131,10 +173,8 @@ def main():
                 filename = os.path.basename(d.get('filename', 'Unknown'))
                 if len(filename) > 25:
                     filename = filename[:22] + "..."
-                
                 total_bytes = d.get('total_bytes') or d.get('total_bytes_estimate')
                 downloaded_bytes = d.get('downloaded_bytes', 0)
-                
                 if total_bytes:
                     progress.update(task_id, total=total_bytes, completed=downloaded_bytes, filename=filename)
                 else:
@@ -144,6 +184,9 @@ def main():
         elif d['status'] == 'finished':
             progress.update(task_id, filename="[green]Processing / Merging...[/green]")
 
+    bin_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'bin')
+    ffmpeg_exe = os.path.join(bin_path, 'ffmpeg.exe')
+    
     ydl_opts = {
         'outtmpl': f'{output_dir}/%(title)s.%(ext)s',
         'progress_hooks': [my_hook],
@@ -152,8 +195,29 @@ def main():
         'noprogress': True,
         'download_archive': f'{output_dir}/download_history.txt',
         'postprocessors': [],
-        'ffmpeg_location': os.path.join(os.path.dirname(os.path.dirname(__file__)), 'bin'),
+        'ffmpeg_location': bin_path if os.path.exists(ffmpeg_exe) else None,
     }
+    
+    # 4. Turbo Speed (Aria2c) Integration
+    aria2_exe = os.path.join(bin_path, 'aria2c.exe')
+    if os.path.exists(aria2_exe):
+        console.print("\n[bold green]⚡ Turbo Speed Enabled (Aria2c Detected!)[/bold green]")
+        ydl_opts['external_downloader'] = aria2_exe
+        # aria2c args for ultra speed
+        ydl_opts['external_downloader_args'] = ['-c', '-j', '16', '-x', '16', '-s', '16', '-k', '1M']
+    
+    # Apply Trim Logic
+    if start_sec is not None and end_sec is not None:
+        def make_range(start, end):
+            def _download_ranges(info_dict, ydl):
+                yield {'start_time': start, 'end_time': end}
+            return _download_ranges
+        ydl_opts['download_ranges'] = make_range(start_sec, end_sec)
+        ydl_opts['force_keyframes_at_cuts'] = True
+
+    # Apply Playlist Limit
+    if playlist_limit.isdigit():
+        ydl_opts['playlistend'] = int(playlist_limit)
     
     # Advanced Options Processing
     if use_proxy:
@@ -176,7 +240,6 @@ def main():
         ydl_opts['subtitlesformat'] = 'srt/best'
         
     if summarize_model:
-        # Request subtitles and description for AI summary
         ydl_opts['writesubtitles'] = True
         ydl_opts['writeautomaticsub'] = True
         if 'subtitleslangs' not in ydl_opts:
@@ -210,9 +273,7 @@ def main():
         
     console.print("\n[bold yellow]🚀 Starting download process...[/bold yellow]")
     
-    title = ""
-    description = ""
-    base_name_no_ext = ""
+    title, description, base_name_no_ext = "", "", ""
     
     try:
         with progress:
@@ -223,7 +284,7 @@ def main():
                 base_filename = ydl.prepare_filename(info)
                 base_name_no_ext = os.path.splitext(os.path.basename(base_filename))[0]
                 
-        console.print(f"\n[bold green]✅ Download completed successfully![/bold green] :tada:")
+        console.print(f"\n[bold green]✅ Task completed successfully![/bold green] :tada:")
         
         # AI Summary Generation Process
         if summarize_model:
@@ -247,10 +308,8 @@ def main():
             else:
                 console.print("[cyan]No subtitles found. Using video title and description instead.[/cyan]")
                 
-            console.print(f"[bold magenta]Generating summary with {summarize_model}... (This might take a minute)[/bold magenta]")
-            
+            console.print(f"[bold magenta]Generating summary with {summarize_model}...[/bold magenta]")
             summary_result = generate_summary(summary_content, summarize_model)
-            
             safe_title = sanitize_filename(title)
             summary_file_path = os.path.join(output_dir, f"{safe_title}_summary.txt")
             
@@ -258,7 +317,6 @@ def main():
                 sf.write(summary_result)
                 
             console.print(f"\n[bold green]📄 Summary saved to: {summary_file_path}[/bold green]")
-            
             preview_len = 1000
             preview = summary_result[:preview_len] + ("..." if len(summary_result) > preview_len else "")
             console.print(Panel(preview, title=f"{summarize_model} Summary Preview", border_style="magenta"))
