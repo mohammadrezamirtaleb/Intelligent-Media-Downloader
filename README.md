@@ -42,6 +42,10 @@
 
 The easiest way to run this tool is using the provided PowerShell wrapper. It automatically sets up an isolated Python Virtual Environment (`venv`), installs all required dependencies, and launches the app.
 
+**Option 1: The Easy Way**
+Simply **Right-Click** on `run.ps1` and select **Run with PowerShell**.
+
+**Option 2: From the Terminal**
 1.  Open **PowerShell**.
 2.  Navigate to the `YouD` folder:
     ```powershell
