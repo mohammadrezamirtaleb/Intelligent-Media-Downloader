@@ -35,6 +35,20 @@ Write-Host "Dependencies installed successfully!" -ForegroundColor Green
 Write-Host "Launching Downloader..." -ForegroundColor Cyan
 Start-Sleep -Seconds 1
 
+# Add deno to PATH (required for YouTube JS challenge solving)
+$DenoDir = Join-Path -Path $env:USERPROFILE -ChildPath ".deno\bin"
+if (Test-Path -Path $DenoDir) {
+    $env:Path = "$DenoDir;$env:Path"
+    Write-Host "Deno JS Runtime detected!" -ForegroundColor Green
+} else {
+    Write-Host "WARNING: Deno not found. YouTube may block downloads." -ForegroundColor Yellow
+    Write-Host "Install deno: irm https://deno.land/install.ps1 | iex" -ForegroundColor Yellow
+}
+
+# Set UTF-8 encoding for Rich console
+$env:PYTHONUTF8 = "1"
+$env:PYTHONIOENCODING = "utf-8"
+
 # Run the script
 python (Join-Path -Path $ScriptDir -ChildPath "src\youtube_downloader.py")
 
