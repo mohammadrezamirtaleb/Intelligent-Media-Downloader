@@ -128,7 +128,10 @@ def main():
     playlist_limit = Prompt.ask("[magenta]🔢 2. Max items to download? (e.g. 5 for latest 5. Enter to skip)[/magenta]", default="")
     
     use_proxy = Prompt.ask("[magenta]🌐 3. Proxy URL (e.g. socks5://127.0.0.1:10808 or enter to skip)[/magenta]", default="")
-    use_cookies = Prompt.ask("[magenta]🍪 4. Extract cookies? (e.g. 'none', 'chrome', or 'chrome:Profile 1' for specific account)[/magenta]", default="none")
+    
+    default_cookie = "cookies.txt" if os.path.exists("cookies.txt") else "none"
+    use_cookies = Prompt.ask(f"[magenta]🍪 4. Extract cookies? ('none', 'chrome', or 'cookies.txt')[/magenta]", default=default_cookie)
+    
     embed_meta = Prompt.ask("[magenta]🏷️ 5. Embed Thumbnail & Metadata into file?[/magenta]", choices=["y", "n"], default="y")
     download_subs = Prompt.ask("[magenta]📝 6. Download Subtitles file? (en, fa, all, none)[/magenta]", default="none")
     
