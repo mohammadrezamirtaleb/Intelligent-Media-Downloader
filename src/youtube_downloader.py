@@ -256,11 +256,11 @@ def main():
     
     # Format Selection
     if choice == "1":
-        ydl_opts.update({'format': 'bestvideo+bestaudio/best', 'merge_output_format': 'mp4'})
+        pass
     elif choice == "2":
-        ydl_opts.update({'format': 'bestvideo[height<=1080]+bestaudio/best', 'merge_output_format': 'mp4'})
+        ydl_opts.update({'format': 'bestvideo*[height<=1080]+bestaudio/best[height<=1080]', 'merge_output_format': 'mp4'})
     elif choice == "3":
-        ydl_opts.update({'format': 'bestvideo[height<=720]+bestaudio/best', 'merge_output_format': 'mp4'})
+        ydl_opts.update({'format': 'bestvideo*[height<=720]+bestaudio/best[height<=720]', 'merge_output_format': 'mp4'})
     elif choice == "4":
         ydl_opts['format'] = 'bestaudio/best'
         ydl_opts['postprocessors'].insert(0, {
