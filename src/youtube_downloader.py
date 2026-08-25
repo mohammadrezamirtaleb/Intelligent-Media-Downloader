@@ -128,7 +128,7 @@ def main():
     playlist_limit = Prompt.ask("[magenta]🔢 2. Max items to download? (e.g. 5 for latest 5. Enter to skip)[/magenta]", default="")
     
     use_proxy = Prompt.ask("[magenta]🌐 3. Proxy URL (e.g. socks5://127.0.0.1:10808 or enter to skip)[/magenta]", default="")
-    use_cookies = Prompt.ask("[magenta]🍪 4. Extract cookies to unlock restricted videos?[/magenta]", choices=["chrome", "firefox", "edge", "none"], default="none")
+    use_cookies = Prompt.ask("[magenta]🍪 4. Extract cookies? (e.g. 'none', 'chrome', or 'chrome:Profile 1' for specific account)[/magenta]", default="none")
     embed_meta = Prompt.ask("[magenta]🏷️ 5. Embed Thumbnail & Metadata into file?[/magenta]", choices=["y", "n"], default="y")
     download_subs = Prompt.ask("[magenta]📝 6. Download Subtitles file? (en, fa, all, none)[/magenta]", default="none")
     
@@ -223,8 +223,11 @@ def main():
     if use_proxy:
         ydl_opts['proxy'] = use_proxy
 
-    if use_cookies != "none":
-        ydl_opts['cookiesfrombrowser'] = (use_cookies, )
+    if use_cookies != "none" and use_cookies != "":
+        if use_cookies.endswith(".txt") and os.path.exists(use_cookies):
+            ydl_opts['cookiefile'] = use_cookies
+        else:
+            ydl_opts['cookiesfrombrowser'] = tuple(use_cookies.split(':'))
         
     if embed_meta == 'y':
         ydl_opts['writethumbnail'] = True
