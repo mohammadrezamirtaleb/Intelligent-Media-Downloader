@@ -33,6 +33,9 @@
 ├── 📂 src/                       # Source code directory
 │   └── 📄 youtube_downloader.py  # The main application script
 │
+├── 📂 Test/                      # Automated Test Scripts
+│   └── 📄 test_utils.py          # Unit tests for helper functions
+│
 ├── 📄 run.ps1                    # Auto-setup and launcher script
 ├── 📄 requirements.txt           # Python dependencies
 ├── 📄 .gitignore                 # Git ignore rules
