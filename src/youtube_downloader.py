@@ -195,7 +195,7 @@ def main():
         'progress_hooks': [my_hook],
         'quiet': True,
         'no_warnings': True,
-        'extractor_args': {'youtube': ['player_client=web_safari,web_embedded,-tv_downgraded']},
+        'extractor_args': {'youtube': ['player_client=ios,android,web']},
         'noprogress': True,
         'download_archive': f'{output_dir}/download_history.txt',
         'postprocessors': [],
