@@ -1,7 +1,41 @@
-venv/
-Downloads/
+﻿# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.class
+*.so
+
+# Virtual Environment
+venv/
+env/
 .env
-.idea/
+
+# IDEs / Editor
 .vscode/
+.idea/
+*.swp
+*.swo
+
+# Downloaded Media Files
+*.mp4
+*.mkv
+*.webm
+*.mp3
+*.flac
+*.m4a
+*.part
+*.ytdl
+
+# Subtitles and Metadata
+*.srt
+*.vtt
+*.info.json
+*.description
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
