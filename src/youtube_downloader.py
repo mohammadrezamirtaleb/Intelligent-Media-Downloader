@@ -195,7 +195,7 @@ def main():
         'progress_hooks': [my_hook],
         'quiet': True,
         'no_warnings': True,
-        'extractor_args': {'youtube': ['player_client=default,web_embedded']},
+        'extractor_args': {'youtube': ['player_client=web_safari,web_embedded,-tv_downgraded']},
         'noprogress': True,
         'download_archive': f'{output_dir}/download_history.txt',
         'postprocessors': [],
@@ -340,6 +340,10 @@ def main():
             console.print("\n[bold red]❌ خطای ضد-ربات یوتیوب (Anti-Bot)[/bold red]")
             console.print("[yellow]یوتیوب درخواست شما را مسدود کرد چون فایل cookies.txt فاقد اثر انگشت مرورگر (User-Agent) است.[/yellow]")
             console.print("[green]راه‌حل نهایی و قطعی:[/green] فایل cookies.txt روی سیستم شما جواب نمی‌دهد. تنها راه عبور، استفاده از مرورگر [bold]Firefox[/bold] است. مرورگر فایرفاکس را نصب کنید، در آن وارد یوتیوب شوید و در مرحله کوکی بنویسید: [bold]firefox[/bold]")
+        elif "The page needs to be reloaded" in error_msg:
+            console.print("\n[bold red]❌ خطای بازنشانی صفحه (Page Reload)[/bold red]")
+            console.print("[yellow]یوتیوب موقتاً به دلیل درخواست‌های زیاد یا تغییرات شبکه، صفحه را مسدود کرده است.[/yellow]")
+            console.print("[green]راه‌حل قطعی:[/green] کوکی‌های مرورگر فایرفاکس خود را در سایت یوتیوب یک بار پاک کنید، دوباره لاگین کنید، یک ویدیو پخش کنید و سپس برنامه را اجرا کنید.")
         else:
             console.print(f"\n[bold red]❌ An error occurred:[/bold red] {error_msg}")
 
