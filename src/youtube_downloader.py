@@ -129,8 +129,8 @@ def main():
     
     use_proxy = Prompt.ask("[magenta]🌐 3. Proxy URL (e.g. socks5://127.0.0.1:10808 or enter to skip)[/magenta]", default="")
     
-    default_cookie = "cookies.txt" if os.path.exists("cookies.txt") else "none"
-    use_cookies = Prompt.ask(f"[magenta]🍪 4. Extract cookies? ('none', 'firefox', 'edge', or 'cookies.txt')[/magenta]", default=default_cookie)
+    default_cookie = "firefox"
+    use_cookies = Prompt.ask(f"[magenta]🍪 4. Extract cookies? ('none', 'firefox', or 'cookies.txt')[/magenta]", default=default_cookie)
     
     embed_meta = Prompt.ask("[magenta]🏷️ 5. Embed Thumbnail & Metadata into file?[/magenta]", choices=["y", "n"], default="y")
     download_subs = Prompt.ask("[magenta]📝 6. Download Subtitles file? (en, fa, all, none)[/magenta]", default="none")
@@ -332,15 +332,13 @@ def main():
     except Exception as e:
         error_msg = str(e)
         if "DPAPI" in error_msg:
-            console.print("\n[bold red]❌ خطای امنیتی مرورگر کروم (DPAPI)[/bold red]")
-            console.print("[yellow]گوگل کروم در آپدیت جدید خود اجازه خواندن کوکی‌ها را مسدود کرده است.[/yellow]")
-            console.print("[green]راه‌حل اول:[/green] مرورگر خود را کاملاً ببندید و دوباره تلاش کنید.")
-            console.print("[green]راه‌حل دوم:[/green] در مرحله کوکی به جای کروم بنویسید [bold]firefox[/bold] یا [bold]edge[/bold] (اگر یوتیوب روی آن‌ها لاگین است).")
-            console.print("[green]راه‌حل سوم (قطعی):[/green] افزونه 'Get cookies.txt LOCALLY' را روی کروم نصب کنید، کوکی را دانلود کنید و اسم آن را در مرحله کوکی بدهید: [bold]cookies.txt[/bold]")
+            console.print("\n[bold red]❌ خطای امنیتی مرورگر کروم و ادج (DPAPI)[/bold red]")
+            console.print("[yellow]گوگل کروم و ادج در آپدیت جدید اجازه خواندن کوکی‌ها را مسدود کرده‌اند.[/yellow]")
+            console.print("[green]راه‌حل قطعی:[/green] از مرورگر [bold]Firefox[/bold] استفاده کنید! فایرفاکس این قفل آزاردهنده را ندارد. کافیست در آن وارد یوتیوب شوید و در برنامه کلمه [bold]firefox[/bold] را تایپ کنید.")
         elif "confirm you’re not a bot" in error_msg or "confirm you're not a bot" in error_msg:
             console.print("\n[bold red]❌ خطای ضد-ربات یوتیوب (Anti-Bot)[/bold red]")
-            console.print("[yellow]یوتیوب درخواست شما را مسدود کرد چون فکر می‌کند ربات هستید.[/yellow]")
-            console.print("[green]راه‌حل قطعی:[/green] از فایل [bold]cookies.txt[/bold] مطابق راهنمایی‌های داده شده استفاده کنید تا هویت شما تأیید شود.")
+            console.print("[yellow]یوتیوب درخواست شما را مسدود کرد چون فایل cookies.txt فاقد اثر انگشت مرورگر (User-Agent) است.[/yellow]")
+            console.print("[green]راه‌حل نهایی و قطعی:[/green] فایل cookies.txt روی سیستم شما جواب نمی‌دهد. تنها راه عبور، استفاده از مرورگر [bold]Firefox[/bold] است. مرورگر فایرفاکس را نصب کنید، در آن وارد یوتیوب شوید و در مرحله کوکی بنویسید: [bold]firefox[/bold]")
         else:
             console.print(f"\n[bold red]❌ An error occurred:[/bold red] {error_msg}")
 
