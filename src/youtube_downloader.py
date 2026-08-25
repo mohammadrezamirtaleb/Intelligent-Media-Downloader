@@ -195,6 +195,7 @@ def main():
         'progress_hooks': [my_hook],
         'quiet': True,
         'no_warnings': True,
+        'extractor_args': {'youtube': ['player_client=default,web_embedded']},
         'noprogress': True,
         'download_archive': f'{output_dir}/download_history.txt',
         'postprocessors': [],
