@@ -129,7 +129,7 @@ def main():
     
     use_proxy = Prompt.ask("[magenta]🌐 3. Proxy URL (e.g. socks5://127.0.0.1:10808 or enter to skip)[/magenta]", default="")
     
-    default_cookie = "firefox"
+    default_cookie = "none"
     use_cookies = Prompt.ask(f"[magenta]🍪 4. Extract cookies? ('none', 'firefox', or 'cookies.txt')[/magenta]", default=default_cookie)
     
     embed_meta = Prompt.ask("[magenta]🏷️ 5. Embed Thumbnail & Metadata into file?[/magenta]", choices=["y", "n"], default="y")
@@ -195,7 +195,7 @@ def main():
         'progress_hooks': [my_hook],
         'quiet': True,
         'no_warnings': True,
-        'extractor_args': {'youtube': ['player_client=ios,android,web']},
+        'extractor_args': {'youtube': ['player_client=ios,android', 'player_skip=webpage,configs']},
         'noprogress': True,
         'download_archive': f'{output_dir}/download_history.txt',
         'postprocessors': [],
