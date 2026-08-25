@@ -1,31 +1,35 @@
 <div align="center">
-  <a href="https://github.com/mohammadrezamirtaleb/Intelligent-Media-Downloader">
-    <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=700&size=32&pause=1000&color=F72585&center=true&vCenter=true&width=800&height=100&lines=Intelligent+Media+Downloader;Bypass+Anti-Bot+with+Deno+JS;Summarize+Videos+with+Local+AI;Turbo+Speed+with+Aria2c" alt="Typing SVG" />
-  </a>
+
+# 🎬 Intelligent Media Downloader
+
+<a href="https://github.com/mohammadrezamirtaleb/Intelligent-Media-Downloader">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&weight=800&size=26&pause=1000&color=00E5FF&center=true&vCenter=true&width=800&height=70&lines=🚀+Bypass+YouTube+Anti-Bot+with+Deno+JS;🤖+Summarize+Videos+with+Local+AI+(Ollama);⚡+Turbo+Speed+Downloads+(Aria2c+16x);🎶+Extract+Audiophile-Grade+Lossless+Audio" alt="Typing SVG" />
+</a>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.8%2B-00E5FF?style=for-the-badge&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/Powered_by-yt--dlp-FF004D?style=for-the-badge&logo=youtube&logoColor=white" />
+  <img src="https://img.shields.io/badge/AI-Ollama_%7C_LLM-000000?style=for-the-badge&logo=openai&logoColor=white" />
+  <img src="https://img.shields.io/badge/License-MIT-00FF66?style=for-the-badge" />
+</p>
+
+> **The ultimate terminal-based CLI tool** designed to download high-quality videos and audio from YouTube, Instagram, Spotify, Twitter, and hundreds of other platforms, seamlessly integrated with **Local AI**.
+
 </div>
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)
-![yt-dlp](https://img.shields.io/badge/Powered_by-yt--dlp-red?logo=youtube)
-![Local AI](https://img.shields.io/badge/AI-Ollama_%7C_LLM_%7C_VLM-black)
-![License](https://img.shields.io/badge/License-MIT-green)
-
-**Intelligent Media Downloader** is a state-of-the-art, terminal-based CLI tool designed to download high-quality videos and audio from YouTube, Instagram, Spotify, Twitter, and hundreds of other platforms, seamlessly integrated with **Local AI**.
-
-Built with **Python**, **Rich**, **Aria2c**, and **FFmpeg**, it elegantly handles complex tasks like bypassing YouTube's latest anti-bot protections, downloading specific video segments, and utilizing cutting-edge **LLMs and VLMs** to intelligently process your downloaded media.
-
----
+<br/>
 
 ## 🧠 The Role of AI (LLMs & VLMs)
 
 What makes this downloader truly *intelligent* is its seamless integration with **Local AI Providers** (specifically **Ollama**). The provider acts as the engine that runs AI models directly on your hardware without needing external APIs or internet connectivity. 
 
-Once media is downloaded, the Intelligent Media Downloader utilizes different types of models to process the content:
+| AI Model Type | What It Does in This Project |
+| :--- | :--- |
+| 📝 **LLM (Language Models)** | Acts as the "brain". Reads through downloaded video subtitles/transcripts and generates concise, highly accurate text summaries. Grasp a 2-hour tutorial in seconds! |
+| 👁️ **VLM (Vision Models)** | Acts as the "eyes". Analyzes video frames or downloaded thumbnails to extract visual context, perform OCR on slides, or describe the visual elements of the media. |
+| ⚡ **The Provider (Ollama)** | Probes `127.0.0.1:11434`. Fetches installed models dynamically. Manages heavy GPU/CPU loads and provides a simple API for text/vision inferences on the fly. |
 
-* 📝 **LLM (Large Language Models):** These models act as the "brain" for text and audio comprehension. When the script downloads video subtitles or transcripts, the LLM reads through the entire text and generates concise, highly accurate summaries. This allows you to instantly grasp the core concepts of long tutorials, podcasts, or documentaries without watching them.
-* 👁️ **VLM (Vision-Language Models):** These models serve as the "eyes" of the system. While LLMs process text, VLMs are capable of analyzing visual data. By feeding video frames or downloaded thumbnails into a VLM, the system can extract visual context, perform Optical Character Recognition (OCR) on slides, or describe the visual elements of the media.
-* ⚡ **The Provider (Ollama):** The script automatically probes your system for an active Ollama instance (`127.0.0.1:11434`). If detected, it fetches all installed models dynamically. Ollama manages the complex task of loading these heavy models into your CPU/GPU RAM and provides a simple API for our downloader to request text or vision inferences on the fly.
-
----
+<br/>
 
 ## ✨ Core Features
 
@@ -37,7 +41,7 @@ Once media is downloaded, the Intelligent Media Downloader utilizes different ty
 * 📋 **Auto-Clipboard:** Detects URLs directly from your clipboard to save time.
 * 🍪 **Advanced Authentication:** Pass `firefox` cookies or a `cookies.txt` file to bypass age/member restrictions seamlessly.
 
----
+<br/>
 
 ## 📂 Project Structure
 
@@ -55,19 +59,22 @@ Once media is downloaded, the Intelligent Media Downloader utilizes different ty
  │    ├── 📄 test_utils.py         # 🛠️ Unit tests
  │    └── 📄 inputs.txt            # 📝 Test inputs
  │
- ├── 📄 run.ps1                    # 🚀 Auto-Setup & Launcher Script (Windows)
+ ├── 📄 run.ps1                    # 🚀 Auto-Setup & Launcher Script
  ├── 📄 start.bat                  # 🖱️ 1-Click execution script
- ├── 📄 requirements.txt           # 📦 Python Dependencies
- ├── 📄 .gitignore                 # 🚫 Git Ignore Rules
  └── 📄 README.md                  # 📖 Project Documentation
 ```
 
----
+<br/>
 
 ## ⚙️ Prerequisites & Required Binaries
 
-**⚠️ IMPORTANT NOTE ON BINARIES:** 
-To keep this repository lightweight, the heavy executable files (`ffmpeg.exe`, `ffprobe.exe`, and `aria2c.exe`) are **NOT** included in this repository. You must download them manually and place them inside the `bin/` folder for advanced features to work!
+> [!WARNING]
+> **IMPORTANT NOTE ON BINARIES:** 
+> To keep this repository lightweight, the heavy executable files (`ffmpeg.exe`, `ffprobe.exe`, and `aria2c.exe`) are **NOT** included in this repository. You must download them manually and place them inside the `bin/` folder for advanced features to work!
+
+<details>
+<summary><b>Click to view installation instructions for required dependencies</b></summary>
+<br/>
 
 1. **Python 3.8+**
 2. **Deno JS Runtime:** Required to bypass YouTube's JS challenges.
@@ -80,20 +87,24 @@ To keep this repository lightweight, the heavy executable files (`ffmpeg.exe`, `
    * Extract `aria2c.exe` into the `bin/` directory.
 5. **Ollama (Optional but Recommended):** Install [Ollama](https://ollama.com/) to enable the AI features.
 
----
+</details>
+
+<br/>
 
 ## 🚀 Getting Started
 
-### The Easy Way (Windows 1-Click)
+### 🟢 The Easy Way (Windows 1-Click)
 Simply double-click the **`start.bat`** file! 
 *(It will bypass execution policies, create a virtual environment, install dependencies, configure the JS runtime, and launch the UI).*
 
-### Terminal Method
+### 👨‍💻 Terminal Method
 1. Open PowerShell in the project directory.
 2. Run the launcher:
    ```powershell
    .\run.ps1
    ```
 
----
-*Powered by Python & Local AI.*
+<br/>
+<p align="center">
+  <i>Powered by Python & Local AI. Made with ❤️.</i>
+</p>
