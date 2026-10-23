@@ -7,7 +7,7 @@
 </a>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.8%2B-00E5FF?style=for-the-badge&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/Python-3.10%2B-00E5FF?style=for-the-badge&logo=python&logoColor=white" />
   <img src="https://img.shields.io/badge/Powered_by-yt--dlp-FF004D?style=for-the-badge&logo=youtube&logoColor=white" />
   <img src="https://img.shields.io/badge/AI-Ollama_%7C_LLM-000000?style=for-the-badge&logo=openai&logoColor=white" />
   <img src="https://img.shields.io/badge/License-MIT-00FF66?style=for-the-badge" />
@@ -33,6 +33,7 @@ What makes this downloader truly *intelligent* is its seamless integration with 
 
 ## ✨ Core Features
 
+* 📱 **Instagram Reels:** Paste a Reel link from Instagram to download video or extract its audio, with optional browser cookies for login-required Reels.
 * 🛡️ **Anti-Bot Bypass:** Uses **Deno JS Runtime** and `EJS` components to flawlessly solve YouTube's latest PO Token & JavaScript challenges.
 * ⚡ **Turbo Download (Aria2c):** Splits downloads into up to 16 concurrent connections for maximum speed.
 * ✂️ **Smart Trimmer:** Download only the parts of a video you need (e.g., `01:20-05:30`).
@@ -76,7 +77,7 @@ What makes this downloader truly *intelligent* is its seamless integration with 
 <summary><b>Click to view installation instructions for required dependencies</b></summary>
 <br/>
 
-1. **Python 3.8+**
+1. **Python 3.10+** (newer yt-dlp releases may require a newer Python).
 2. **Deno JS Runtime:** Required to bypass YouTube's JS challenges.
    * *Windows:* Run `irm https://deno.land/install.ps1 | iex` in PowerShell.
 3. **FFmpeg & FFprobe:** Required for merging audio/video and embedding metadata.
@@ -103,6 +104,31 @@ Simply double-click the **`start.bat`** file!
    ```powershell
    .\run.ps1
    ```
+
+## 📱 Downloading Instagram Reels
+
+1. Launch IMD using `start.bat` or `.\run.ps1`.
+2. Paste a direct Reel URL, for example `https://www.instagram.com/reel/REEL_ID/`. Links using `/reels/`, `/username/reel/`, mobile hosts, and links with sharing parameters are normalized automatically. For a `/share/…` link, open it in your browser and copy the final `/reel/…` URL.
+3. Choose your video quality, or MP3 / FLAC to extract the Reel's audio. Option **6** downloads a single video file without merging. Audio extraction, trimming, and thumbnail / metadata embedding require FFmpeg. When FFmpeg is unavailable, metadata embedding defaults to **n** for Reels.
+4. Try **none** at the cookies prompt for public Reels. If Instagram requests login, sign in to Instagram in Firefox using an account that can view the Reel, then enter **firefox**. You can also enter the path to a Netscape-format cookie file (for example `instagram_cookies.txt`). Cookies for YouTube do not authenticate Instagram.
+
+Reels are saved in `Downloads/` with their unique media ID in the filename so matching titles do not overwrite each other. Download history skips media already downloaded. Full Instagram profiles and Reel audio-library pages are outside this single-Reel workflow.
+
+If Instagram reports a rate limit, wait before retrying. If extraction fails after confirming the Reel opens in your browser, update the extractor in the environment used to run IMD:
+
+```powershell
+.\venv\Scripts\python.exe -m pip install --upgrade yt-dlp
+```
+
+Keep cookie files private; they contain login credentials. IMD only loads cookies when you select a browser or file.
+
+## 🧪 Tests
+
+```powershell
+python -m unittest discover -s Test -v
+```
+
+The automated tests run without Instagram credentials or internet access. A real download may still require a current Instagram session.
 
 <br/>
 <p align="center">

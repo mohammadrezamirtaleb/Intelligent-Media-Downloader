@@ -2,7 +2,7 @@ $ErrorActionPreference = 'Stop'
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
 Write-Host "=========================================" -ForegroundColor Cyan
-Write-Host "       YouTube Downloader Setup          " -ForegroundColor Magenta
+Write-Host "   Intelligent Media Downloader Setup    " -ForegroundColor Magenta
 Write-Host "=========================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -29,7 +29,11 @@ if (Test-Path -Path $ActivateScript) {
 
 # Install Requirements
 Write-Host "Checking dependencies (yt-dlp, rich)..." -ForegroundColor Yellow
-pip install -r (Join-Path -Path $ScriptDir -ChildPath "requirements.txt") -q
+python -m pip install -r (Join-Path -Path $ScriptDir -ChildPath "requirements.txt") -q
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Dependency installation failed. Check your Python version and network connection." -ForegroundColor Red
+    Exit $LASTEXITCODE
+}
 
 Write-Host "Dependencies installed successfully!" -ForegroundColor Green
 Write-Host "Launching Downloader..." -ForegroundColor Cyan

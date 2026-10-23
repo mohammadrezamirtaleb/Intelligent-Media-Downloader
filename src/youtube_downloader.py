@@ -1,6 +1,8 @@
 import os
 import sys
 import re
+import shutil
+from urllib.parse import urlsplit
 import requests
 import tkinter as tk
 from rich.console import Console
@@ -15,7 +17,7 @@ def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def show_banner():
-    banner_text = "[bold cyan]Universal Media Downloader Super Pro[/bold cyan]\n[magenta]YouTube, Instagram, Spotify, Twitter & more![/magenta]\n[yellow]Powered by yt-dlp, FFmpeg, Aria2c, Rich, Mutagen & Local AI[/yellow]"
+    banner_text = "[bold cyan]Universal Media Downloader Super Pro[/bold cyan]\n[magenta]YouTube, Instagram Reels, Spotify, Twitter & more![/magenta]\n[yellow]Powered by yt-dlp, FFmpeg, Aria2c, Rich, Mutagen & Local AI[/yellow]"
     console.print(Panel(banner_text, expand=False, border_style="green"))
 
 def get_clipboard_text():
@@ -79,6 +81,47 @@ def clean_vtt(text):
 def sanitize_filename(name):
     return re.sub(r'[\\/*?:"<>|]', "", name)
 
+
+def normalize_media_url(url):
+    """Canonicalize Reel links copied from Instagram without changing other URLs."""
+    url = url.strip()
+    candidate = url if '://' in url else f'https://{url}'
+    parsed = urlsplit(candidate)
+    if parsed.scheme not in ('http', 'https') or parsed.hostname not in (
+        'instagram.com', 'www.instagram.com', 'm.instagram.com',
+    ):
+        return url
+
+    # Instagram also shares /reels/ and /username/reel/ links.
+    match = re.fullmatch(
+        r'/(?:(?!share/)[A-Za-z0-9_.]+/)?reels?/([A-Za-z0-9_-]+)/?', parsed.path,
+    )
+    if match and match.group(1) != 'audio':
+        return f'https://www.instagram.com/reel/{match.group(1)}/'
+    return url
+
+
+def is_instagram_reel_url(url):
+    parsed = urlsplit(normalize_media_url(url))
+    return parsed.scheme in ('http', 'https') and parsed.hostname == 'www.instagram.com' and bool(
+        re.fullmatch(r'/reel/(?!audio/)[A-Za-z0-9_-]+/', parsed.path)
+    )
+
+
+def cookie_options(source):
+    """Build yt-dlp authentication options for a browser or a cookie file."""
+    source = source.strip()
+    if not source or source.lower() == 'none':
+        return {}
+    cookie_path = os.path.expanduser(source.strip('\"'))
+    if os.path.isfile(cookie_path):
+        return {'cookiefile': cookie_path}
+    if cookie_path.lower().endswith('.txt'):
+        raise ValueError(f'Cookie file not found: {cookie_path}')
+    # Split once so Windows drive letters in browser profile paths are preserved.
+    return {'cookiesfrombrowser': tuple(source.split(':', 1))}
+
+
 def main():
     clear_screen()
     show_banner()
@@ -93,11 +136,22 @@ def main():
             url = clip_text
             
     if not url:
-        url = Prompt.ask("\n[bold yellow]📌 Please enter the Media URL (YouTube, Insta, Spotify, etc.)[/bold yellow]")
+        url = Prompt.ask("\n[bold yellow]📌 Please enter the Media URL (YouTube, Instagram Reel, Spotify, etc.)[/bold yellow]")
     
     if not url.strip():
         console.print("[bold red]URL cannot be empty![/bold red]")
         return
+
+    url = normalize_media_url(url)
+    instagram_reel = is_instagram_reel_url(url)
+    bin_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'bin')
+    ffmpeg_exe = os.path.join(bin_path, 'ffmpeg.exe')
+    ffmpeg_available = os.path.isfile(ffmpeg_exe) or shutil.which('ffmpeg') is not None
+    if instagram_reel:
+        console.print("\n[bold magenta]📱 Instagram Reel detected.[/bold magenta]")
+        console.print("[cyan]Try public Reels without cookies first. If Instagram requires login, sign in to Instagram in Firefox and select 'firefox', or use a Netscape cookies file.[/cyan]")
+        if not ffmpeg_available:
+            console.print("[yellow]FFmpeg was not found. Use a single-file video format; audio extraction, trimming and metadata embedding require FFmpeg.[/yellow]")
         
     console.print("\n[bold cyan]🎞️ Select Download Format & Quality:[/bold cyan]")
     console.print("1. [green]Video: Best Available (Up to 4K/8K) + Audio[/green]")
@@ -130,9 +184,15 @@ def main():
     use_proxy = Prompt.ask("[magenta]🌐 3. Proxy URL (e.g. socks5://127.0.0.1:10808 or enter to skip)[/magenta]", default="")
     
     default_cookie = "none"
-    use_cookies = Prompt.ask(f"[magenta]🍪 4. Extract cookies? ('none', 'firefox', or 'cookies.txt')[/magenta]", default=default_cookie)
+    use_cookies = Prompt.ask("[magenta]🍪 4. Cookies ('none', 'firefox', or path to a cookies.txt file)[/magenta]", default=default_cookie)
+    try:
+        authentication = cookie_options(use_cookies)
+    except ValueError as error:
+        console.print(str(error), style="red", markup=False)
+        return
     
-    embed_meta = Prompt.ask("[magenta]🏷️ 5. Embed Thumbnail & Metadata into file?[/magenta]", choices=["y", "n"], default="y")
+    embed_default = "n" if instagram_reel and not ffmpeg_available else "y"
+    embed_meta = Prompt.ask("[magenta]🏷️ 5. Embed Thumbnail & Metadata into file?[/magenta]", choices=["y", "n"], default=embed_default)
     download_subs = Prompt.ask("[magenta]📝 6. Download Subtitles file? (en, fa, all, none)[/magenta]", default="none")
     
     # AI Summary detection
@@ -187,9 +247,6 @@ def main():
         elif d['status'] == 'finished':
             progress.update(task_id, filename="[green]Processing / Merging...[/green]")
 
-    bin_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'bin')
-    ffmpeg_exe = os.path.join(bin_path, 'ffmpeg.exe')
-    
     ydl_opts = {
         'outtmpl': f'{output_dir}/%(title)s.%(ext)s',
         'progress_hooks': [my_hook],
@@ -202,6 +259,14 @@ def main():
         'postprocessors': [],
         'ffmpeg_location': bin_path if os.path.exists(ffmpeg_exe) else None,
     }
+
+    if instagram_reel:
+        ydl_opts.update({
+            'noplaylist': True,
+            # Different Reels often have the same title (e.g. "Video by user").
+            'outtmpl': f'{output_dir}/%(title).150B [%(id)s].%(ext)s',
+            'http_headers': {'Referer': 'https://www.instagram.com/'},
+        })
     
     # 4. Turbo Speed (Aria2c) Integration
     aria2_exe = os.path.join(bin_path, 'aria2c.exe')
@@ -228,11 +293,7 @@ def main():
     if use_proxy:
         ydl_opts['proxy'] = use_proxy
 
-    if use_cookies != "none" and use_cookies != "":
-        if use_cookies.endswith(".txt") and os.path.exists(use_cookies):
-            ydl_opts['cookiefile'] = use_cookies
-        else:
-            ydl_opts['cookiesfrombrowser'] = tuple(use_cookies.split(':'))
+    ydl_opts.update(authentication)
         
     if embed_meta == 'y':
         ydl_opts['writethumbnail'] = True
@@ -287,6 +348,9 @@ def main():
         with progress:
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info = ydl.extract_info(url, download=True)
+                if info is None:
+                    console.print("\n[yellow]No new media to download (the Reel or video may already be in download history).[/yellow]")
+                    return
                 title = info.get('title', 'video')
                 description = info.get('description', '')
                 base_filename = ydl.prepare_filename(info)
@@ -333,7 +397,14 @@ def main():
         
     except Exception as e:
         error_msg = str(e)
-        if "DPAPI" in error_msg:
+        if instagram_reel:
+            console.print("\n[bold red]❌ Instagram Reel download failed.[/bold red]")
+            console.print(error_msg, markup=False)
+            if any(term in error_msg.lower() for term in ('429', 'rate', 'too many requests')):
+                console.print("[yellow]Instagram may be limiting requests. Wait before retrying.[/yellow]")
+            console.print("[yellow]Open the Reel in your browser to check it is available. If login is required, sign in to Instagram in Firefox and select 'firefox', or provide a Netscape cookies file from that session.[/yellow]")
+            console.print("[cyan]If extraction still fails, update yt-dlp: python -m pip install --upgrade yt-dlp[/cyan]")
+        elif "DPAPI" in error_msg:
             console.print("\n[bold red]❌ خطای امنیتی مرورگر کروم و ادج (DPAPI)[/bold red]")
             console.print("[yellow]گوگل کروم و ادج در آپدیت جدید اجازه خواندن کوکی‌ها را مسدود کرده‌اند.[/yellow]")
             console.print("[green]راه‌حل قطعی:[/green] از مرورگر [bold]Firefox[/bold] استفاده کنید! فایرفاکس این قفل آزاردهنده را ندارد. کافیست در آن وارد یوتیوب شوید و در برنامه کلمه [bold]firefox[/bold] را تایپ کنید.")
